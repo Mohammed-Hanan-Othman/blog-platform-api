@@ -1,0 +1,21 @@
+{
+  "name": "blog-platform",
+  "version": "1.0.0",
+  "description": "Blog platform where authors can create and manage posts, while users can only read posts and comment on them.",
+  "license": "ISC",
+  "author": "Mohammed-Hanan Othman",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
