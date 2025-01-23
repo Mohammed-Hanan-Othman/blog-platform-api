@@ -1,0 +1,1 @@
+// Implements methods in the users controller
