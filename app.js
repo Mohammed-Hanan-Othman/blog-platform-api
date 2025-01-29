@@ -7,6 +7,9 @@ const { commentsRouter } = require("./routers/commentsRouter");
 const { indexRouter } = require("./routers/indexRouter");
 
 const app = express();
+app.use(express.urlencoded({extended:false}));
+app.use(express.json());
+
 app.use("/api/auth/", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/posts", postsRouter);
