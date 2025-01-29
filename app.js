@@ -5,12 +5,19 @@ const { usersRouter } = require("./routers/usersRouter");
 const { postsRouter } = require("./routers/postsRouter");
 const { commentsRouter } = require("./routers/commentsRouter");
 const { indexRouter } = require("./routers/indexRouter");
+const { protectRoute } = require("./middlewares/authToken");
 
 const app = express();
 app.use(express.urlencoded({extended:false}));
 app.use(express.json());
 
 app.use("/api/auth/", authRouter);
+app.get("/api/test-auth",
+    protectRoute,
+    (req, res) =>{
+        res.status(200).json({message:"Welcome to test route"});
+    }
+)
 app.use("/api/users", usersRouter);
 app.use("/api/posts", postsRouter);
 app.use("/api/posts/:postId/comments", commentsRouter);
