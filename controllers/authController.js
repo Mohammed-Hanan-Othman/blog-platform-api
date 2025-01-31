@@ -57,7 +57,7 @@ const postLogin = async (req, res) => {
             }
         });
         if (!user) {
-            return res.status(400).json({message:"Invalid credentials identifier"});
+            return res.status(400).json({message:"Invalid credentials"});
         }
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
