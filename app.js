@@ -20,7 +20,7 @@ app.get("/api/test-auth",
 )
 app.use("/api/users", usersRouter);
 app.use("/api/posts", postsRouter);
-app.use("/api/posts/:postId/comments", commentsRouter);
+app.use("/api/comments/", commentsRouter);
 app.use("/", indexRouter);
 
 

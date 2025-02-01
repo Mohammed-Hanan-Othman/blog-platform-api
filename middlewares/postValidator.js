@@ -43,8 +43,15 @@ const validatePostId = [
     param("id").trim().notEmpty().escape().withMessage("Post id is required")
         .isAlphanumeric().withMessage("Post id invalid")
 ];
+const validatePostStatus = [
+    check("status").trim().notEmpty().escape()
+        .withMessage("Status is required")
+        .isIn(["draft","published"])
+        .withMessage("Posts status can only be 'draft' or 'published'")
+];
 module.exports = {
     validatePost,
     validatePostUpdate,
-    validatePostId
-}
+    validatePostId,
+    validatePostStatus
+};

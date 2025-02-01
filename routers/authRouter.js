@@ -1,5 +1,5 @@
 // Implements authentication
-const Router = require("express");
+const { Router } = require("express");
 const { getSignupPage, 
     postSignup, 
     getLoginPage,
@@ -15,7 +15,8 @@ authRouter.post(
     "/signup", 
     validateSignup,
     handleValidationErrors,
-    postSignup);
+    postSignup
+);
 
 // login routes
 authRouter.get("/login", getLoginPage);
@@ -25,6 +26,5 @@ authRouter.post(
     handleValidationErrors,
     postLogin
 );
-
 
 module.exports = {authRouter};
