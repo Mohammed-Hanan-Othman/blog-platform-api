@@ -23,7 +23,6 @@ const validatePost = [
         .isIn(["draft","published"])
         .withMessage("Posts status can only be 'draft' or 'published'")
 ];
-
 const validatePostUpdate = [
     param("id").trim().notEmpty().escape().withMessage("Post id is required")
         .isAlphanumeric().withMessage("Post id invalid"),
@@ -40,8 +39,12 @@ const validatePostUpdate = [
         .isIn(["draft","published"])
         .withMessage("Posts status can only be 'draft' or 'published'")
 ];
-
+const validatePostId = [
+    param("id").trim().notEmpty().escape().withMessage("Post id is required")
+        .isAlphanumeric().withMessage("Post id invalid")
+];
 module.exports = {
     validatePost,
-    validatePostUpdate
+    validatePostUpdate,
+    validatePostId
 }

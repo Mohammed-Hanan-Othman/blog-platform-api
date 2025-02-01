@@ -146,12 +146,12 @@ const updatePost = async (req, res) => {
         return res.status(200).json({
             message: "Post updated successfully",
             data: {
-                id: updatePost.id,
-                title: updatePost.title,
+                id: updatedPost.id,
+                author: updatedPost.author.username,
+                title: updatedPost.title,
                 content: updatedPost.content,
                 createdAt: updatedPost.createdAt,
                 updatedAt: updatedPost.updatedAt,
-                author: updatedPost.author.username
             }
         });
     } catch (error) {
@@ -159,10 +159,52 @@ const updatePost = async (req, res) => {
         return res.status(500).json({message: "Error while updating post"});
     }
 };
+const deletePost = async (req, res) => {
+    try {
+        // obtain userId and the postId
+        const userId = req.user.id;
+        const postId = req.params.id;
+        // check if post exist
+        const post = await prisma.posts.findFirst({
+            where:{ id: postId },
+        });
+        if (!post) {
+            return res.status(404).json({message: "No posts found"});
+        }
+        // check if user is "allowed" to delete a post
+        if (post.authorId !== userId && req.user.role !== "admin") {
+            return res.status(401).json({
+                message: "Only authors and admins can delete this post"
+            });
+        }
+        // delete post
+        const deletedPost = await prisma.posts.delete({
+            where:{ id : postId },
+            include:{ author : true }
+        });
+        // send json to inform about deleted post
+        return res.status(200).json({
+            message: "Post deleted successfully",
+            data: {
+                id: deletedPost.id,
+                author: deletedPost.author.username,
+                title: deletedPost.title,
+                content: deletedPost.content,
+                createdAt: deletedPost.createdAt,
+                updatedAt: deletedPost.updatedAt,
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: "Error while deleting post"});
+    }
+};
+
 
 module.exports = {
     getAllPosts,
     getSinglePost,
     createPost,
-    updatePost
+    updatePost,
+    deletePost,
 };
