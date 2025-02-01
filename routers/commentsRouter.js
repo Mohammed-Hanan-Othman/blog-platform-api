@@ -1,21 +1,31 @@
 // Implements methods in the comment controller
 const { Router } = require("express");
+const { protectRoute } = require("../middlewares/authToken");
+const { validateCommentId, validateCommentContent } = require("../middlewares/commentValidator");
+const { handleValidationErrors } = require("../middlewares/handleValidation");
+const { getSingleComment, updateComment, 
+    deleteComment,
+} = require("../controllers/commentsController");
 const commentsRouter = Router();
 
 commentsRouter.get("/:id",
-    (req, res) => {
-        res.status(200).json({message:"Get a specific comment"});
-    }
+    protectRoute,
+    validateCommentId,
+    handleValidationErrors,
+    getSingleComment,
 );
 commentsRouter.put("/:id",
-    (req, res) => {
-        res.status(200).json({message:"Update a specific comment"});
-    }
+    protectRoute,
+    validateCommentId,
+    validateCommentContent,
+    handleValidationErrors,
+    updateComment
 );
 commentsRouter.delete("/:id",
-    (req, res) => {
-        res.status(200).json({message:"Delete a specific comment"});
-    }
+    protectRoute,
+    validateCommentId,
+    handleValidationErrors,
+    deleteComment
 );
 
 module.exports = { commentsRouter };
