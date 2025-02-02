@@ -12,7 +12,7 @@ commentsRouter.get("/:id",
     protectRoute,
     validateCommentId,
     handleValidationErrors,
-    getSingleComment,
+    getSingleComment
 );
 commentsRouter.put("/:id",
     protectRoute,

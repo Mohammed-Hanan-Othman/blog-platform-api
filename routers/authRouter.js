@@ -1,9 +1,7 @@
 // Implements authentication
 const { Router } = require("express");
-const { getSignupPage, 
-    postSignup, 
-    getLoginPage,
-    postLogin
+const { getSignupPage, postSignup, 
+    getLoginPage,postLogin
 } = require("../controllers/authController");
 const { validateSignup, validateLogin } = require("../middlewares/authValidator");
 const { handleValidationErrors } = require("../middlewares/handleValidation");
@@ -27,4 +25,4 @@ authRouter.post(
     postLogin
 );
 
-module.exports = {authRouter};
+module.exports = { authRouter };

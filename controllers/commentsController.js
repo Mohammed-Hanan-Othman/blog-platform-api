@@ -38,9 +38,7 @@ const getSingleComment = async (req, res) => {
         });
     } catch (error) {
         console.log(error);
-        return res.status(500).json({
-            message: "Error while retrieiving comments"
-        });
+        return res.status(500).json({ message: "Error retrieiving comments" });
     }
 };
 const updateComment = async (req, res) => {
@@ -69,7 +67,7 @@ const updateComment = async (req, res) => {
         // update the comment
         const updatedComment = await prisma.comments.update({
             where: { id: commentId },
-            data :{ content : content},
+            data : { content : content },
             include: { user: true, 
                 post: { include: { author: true } }
             }
@@ -135,7 +133,7 @@ const deleteComment = async (req, res) => {
                 content: deletedComment.content,
                 createdAt: deletedComment.createdAt,
                 updatedAt: deletedComment.updatedAt,
-                post:{
+                post: {
                     id: deletedComment.post.id,
                     title: deletedComment.post.title,
                     author: deletedComment.post.author.username,

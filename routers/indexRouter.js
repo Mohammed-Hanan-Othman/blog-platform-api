@@ -4,4 +4,4 @@ const indexRouter = Router();
 
 
 indexRouter.get("/", getIndexPage);
-module.exports = {indexRouter};
+module.exports = { indexRouter };

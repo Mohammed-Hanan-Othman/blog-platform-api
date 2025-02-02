@@ -3,7 +3,7 @@ const { Router } = require("express");
 const { protectRoute } = require("../middlewares/authToken");
 const { getAllPosts, createPost, 
         getSinglePost, updatePost, 
-        deletePost, updatePostStatus, 
+        deletePost, updatePostStatus,
         createComment, getAllComments
 } = require("../controllers/postsController");
 const { validatePost, validatePostUpdate,
@@ -41,7 +41,7 @@ postsRouter.delete("/:id",
     protectRoute,
     validatePostId,
     handleValidationErrors,
-    deletePost,
+    deletePost
 );
 
 postsRouter.put("/:id/status",
@@ -49,7 +49,7 @@ postsRouter.put("/:id/status",
     validatePostId,
     validatePostStatus,
     handleValidationErrors,
-    updatePostStatus,
+    updatePostStatus
 );
 
 postsRouter.get("/:id/comments",
@@ -64,6 +64,6 @@ postsRouter.post("/:id/comments",
     validatePostId,
     validateCommentContent,
     handleValidationErrors,
-    createComment,
+    createComment
 );
 module.exports = { postsRouter };

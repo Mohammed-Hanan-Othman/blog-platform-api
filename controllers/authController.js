@@ -14,10 +14,9 @@ const postSignup = async (req, res) => {
     try {
         const { username, email, role, password } = req.body;
         const hashedPassword = await bcrypt.hash(password, DB_SALT);
-        // console.log(hashedPassword);
         // create new user with hashed password
         const newUser = await prisma.users.create({
-            data:{
+            data: {
                 username: username,
                 email: email,
                 role: role,
@@ -31,7 +30,7 @@ const postSignup = async (req, res) => {
             role: newUser.role
         }
         return res.status(201).json({
-            message:"New user created successfully",
+            message: "New user created successfully",
             data: userData
         });
 
@@ -49,10 +48,10 @@ const postLogin = async (req, res) => {
     try {
         const { identifier, password } = req.body;
         const user = await prisma.users.findFirst({
-            where:{
-                OR:[
-                    { username:identifier },
-                    { email:identifier }
+            where: {
+                OR: [
+                    { username: identifier },
+                    { email: identifier }
                 ]
             }
         });
@@ -71,7 +70,7 @@ const postLogin = async (req, res) => {
             email: user.email,
             role: user.role
         }
-        const token = jwt.sign(userData, JWT_SECRET, {expiresIn:"1hr"});
+        const token = jwt.sign( userData, JWT_SECRET, { expiresIn: "1hr" });
         return res.status(200).json({
             message: "Login successful",
             token:token,

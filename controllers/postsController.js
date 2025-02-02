@@ -1,6 +1,5 @@
 // This file would contain code implemented by posts router
 const { PrismaClient } = require("@prisma/client");
-const { authRouter } = require("../routers/authRouter");
 const prisma = new PrismaClient();
 
 const getAllPosts = async (req, res) => {
@@ -103,11 +102,12 @@ const createPost = async (req, res) => {
                     data:{
                         id: newPost.id,
                         title: newPost.title,
-                        content: `${newPost.content.slice(200)}...`
+                        content: `${newPost.content.slice(200)}...`,
+                        createdAt: newPost.createdAt,
+                        updatedAt: newPost.updatedAt
                     }
                 });
         }
-        
     } catch (error) {
         console.log(error);
         return res.status(500).json({message:"Error while creating posts"});
@@ -172,7 +172,7 @@ const deletePost = async (req, res) => {
         if (!post) {
             return res.status(404).json({message: "No posts found"});
         }
-        // check if user is "allowed" to delete a post
+        // check if user is allowed to delete a post
         if (post.authorId !== userId && req.user.role !== "admin") {
             return res.status(401).json({
                 message: "Only authors and admins can delete this post"
@@ -224,7 +224,7 @@ const updatePostStatus = async (req, res) => {
         // update post
         const updatedPost = await prisma.posts.update({
             where: { id: id },
-            data: { status: status, },
+            data: { status: status },
             include: { author: true }
         });
         // return post information
@@ -241,7 +241,8 @@ const updatePostStatus = async (req, res) => {
             }
         });
     } catch (error) {
-        co
+        console.log(error);
+        return res.status(500).json({message: "Error updating post status"});
     }
 };
 const getAllComments = async (req, res) => {
@@ -273,22 +274,21 @@ const getAllComments = async (req, res) => {
             };
         });
 
+        // send comments json
         return res.status(200).json({
             message: "Comments retrieved successfully",
-            id: post.id,
-            postTitle: post.title,
-            author: post.author.username,
-            createdAt: post.createdAt,
-            updatedAt: post.updatedAt,
-            comments: commentData
+            data: {
+                id: post.id,
+                postTitle: post.title,
+                author: post.author.username,
+                createdAt: post.createdAt,
+                updatedAt: post.updatedAt,
+                comments: commentData
+            }
         });
-
-        // res.send("Hey there, let's retrieve some comments");
     } catch (error) {
         console.log(error);
-        return res.status(500).json({
-            message:"Error while retrieving comments"
-        });
+        return res.status(500).json({ message:"Error retrieving comments" });
     }
 };
 const createComment = async (req, res) => {
@@ -306,7 +306,7 @@ const createComment = async (req, res) => {
         }
         // ensure post has been published first
         if (post.status !== "published") {
-            return res.status(400).json({message:"Post not published yet"});
+            return res.status(400).json({ message:"Post not published yet" });
         }
         // create comment on the post
         const comment = await prisma.comments.create({
@@ -324,9 +324,11 @@ const createComment = async (req, res) => {
                 content: comment.content,
                 user: comment.user.username,
                 role: comment.user.role,
-                postId: comment.postId,
-                title: comment.post.title,
-                author: comment.post.author.username,
+                post : {
+                    postId: comment.postId,
+                    title: comment.post.title,
+                    author: comment.post.author.username,
+                },
                 createdAt: comment.createdAt,
                 updatedAt: comment.updatedAt,
             }
