@@ -12,8 +12,8 @@ const validateSignup = [
     
     check("role")
         .notEmpty().withMessage("role is required")
-        .isIn(["reader","author","admin"])
-        .withMessage("invalid role. user must be 'reader', 'author', 'admin'"),
+        .isIn(["reader","author"])
+        .withMessage("invalid role. user must be 'reader' or 'author'"),
     
     check("password")
         .notEmpty().withMessage("password is required")

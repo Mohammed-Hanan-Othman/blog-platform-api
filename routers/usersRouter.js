@@ -1,19 +1,37 @@
 // Implements methods in the users controller
 const { Router } = require("express");
+const { protectRoute } = require("../middlewares/authToken");
+const { getAllUsers, getSingleUser, deleteSingleUser, getMyInfo, updateMyInfo } = require("../controllers/usersController");
+const { validateUserId, validateUserInfo } = require("../middlewares/userValidator");
+const { handleValidationErrors } = require("../middlewares/handleValidation");
 const usersRouter = Router();
 
 // Handles /api/users
-usersRouter.get("/", (req, res) => {
-    res.status(200).json({message:"See all the users here"});
-});
-usersRouter.put("/me", (req, res) => {
-    res.status(200).json({message:"Update user's personal information"});
-});
-usersRouter.get("/:id", (req, res) => {
-    res.status(200).json({message:"Info on specific user: Admin only"});
-});
-usersRouter.delete("/:id", (req, res) =>{
-    res.status(200).json({message:"Delete a specific user"});
-});
+usersRouter.get("/", 
+    protectRoute,
+    getAllUsers
+);
+usersRouter.get("/me", 
+    protectRoute,
+    getMyInfo,
+);
+usersRouter.put("/me", 
+    protectRoute,
+    validateUserInfo,
+    handleValidationErrors,
+    updateMyInfo
+);
+usersRouter.get("/:id", 
+    protectRoute,
+    validateUserId,
+    handleValidationErrors,
+    getSingleUser
+);
+usersRouter.delete("/:id",
+    protectRoute,
+    validateUserId,
+    handleValidationErrors,
+    deleteSingleUser
+);
 
 module.exports = { usersRouter };
