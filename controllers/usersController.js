@@ -83,8 +83,27 @@ const deleteSingleUser = async (req, res) => {
             });
         }
         // delete user posts and associated comments, then delete the user.
-        // await prisma.$transaction([]);
-        return res.status(200).json({message: "Admin will delete user"});
+        const [deletedComments, deletedPosts, userDeleted]
+            = await prisma.$transaction([
+            // delete comments associated with the posts
+            prisma.comments.deleteMany({
+                where: { post:{authorId: userId}}
+            }),
+            // delete posts of user
+            prisma.posts.deleteMany({
+                where: { authorId: userId}
+            }),
+            // delete user
+            prisma.users.delete({
+                where : { id: userId }
+            }),
+        ]);
+        return res.status(200).json({
+            message:`User deleted successfully`,
+            data: {
+                postsDeleted : `deletedPosts`
+            }
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Error deleting user" });
