@@ -81,9 +81,32 @@ const postLogin = async (req, res) => {
         res.status(500).json({message:"Internal server error"});
     }
 }
+const requestResetCode = async (req, res) => {
+    try {
+        const { email } = req.body;
+        // check if user already exists
+        const user = await prisma.users.findUnique({
+            where: { email: email },
+            omit: { password: true }
+        });
+        if (!user) {
+            return res.status(401).json({
+                message: "No users exist with the given email."
+            });
+        }
+        // send password reset code to user email
+        return res.status(200).json({
+            message: "Reset code sent successfully to email"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: "Internal Server Error"});
+    }
+}
 module.exports = {
     getSignupPage,
     postSignup,
     getLoginPage,
     postLogin,
+    requestResetCode
 };

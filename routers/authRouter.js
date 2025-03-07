@@ -1,10 +1,13 @@
 // Implements authentication
 const { Router } = require("express");
 const { getSignupPage, postSignup, 
-    getLoginPage,postLogin
+    getLoginPage,postLogin,
+    requestResetCode
 } = require("../controllers/authController");
-const { validateSignup, validateLogin } = require("../middlewares/authValidator");
+const { validateSignup, validateLogin, validateResetRequest } = require("../middlewares/authValidator");
 const { handleValidationErrors } = require("../middlewares/handleValidation");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 const authRouter = Router();
 
 // sign up routes
@@ -25,9 +28,11 @@ authRouter.post(
     postLogin
 );
 // password reset
-authRouter.post("/forgot-password",(req, res)=>{
-    // Send reset code to user's email
-});
+authRouter.post("/forgot-password",
+    validateResetRequest,
+    handleValidationErrors,
+    requestResetCode
+);
 authRouter.post("/verify-reset-code",(req, res)=>{
     // Verify reset code
 });

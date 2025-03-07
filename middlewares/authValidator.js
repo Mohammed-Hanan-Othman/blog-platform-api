@@ -27,8 +27,13 @@ const validateLogin = [
     check("password")
         .notEmpty().withMessage("password cannot be empty")
 ];
-
+const validateResetRequest = [
+    check("email")
+        .notEmpty().withMessage("email is required")
+        .isEmail().withMessage("email is invalid")
+]
 module.exports = {
     validateSignup,
-    validateLogin
+    validateLogin,
+    validateResetRequest
 };
