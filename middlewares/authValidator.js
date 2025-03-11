@@ -32,8 +32,34 @@ const validateResetRequest = [
         .notEmpty().withMessage("email is required")
         .isEmail().withMessage("email is invalid")
 ]
+const validateResetCode = [
+    check("resetCode")
+        .notEmpty().withMessage("reset code required")
+        .escape(),
+    check("email")
+        .notEmpty().withMessage("email is required")
+        .isEmail().withMessage("email is invalid")
+        .escape()
+];
+const validateResetPassword = [
+    check("resetCode")
+        .notEmpty().withMessage("reset code required")
+        .escape(),
+    check("email")
+        .notEmpty().withMessage("email is required")
+        .isEmail().withMessage("email is invalid")
+        .escape(),
+    check("password")
+        .notEmpty().withMessage("password is required")
+        .isLength({min:8}).withMessage("password must be at least 8 characters long"),
+    check("password2")
+        .notEmpty().withMessage("password is required")
+        .isLength({min:8}).withMessage("password must be at least 8 characters long")
+];
 module.exports = {
     validateSignup,
     validateLogin,
-    validateResetRequest
+    validateResetRequest,
+    validateResetCode,
+    validateResetPassword
 };

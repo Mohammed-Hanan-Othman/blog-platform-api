@@ -115,11 +115,12 @@ const requestResetCode = async (req, res) => {
         await prisma.passwordReset.create({
             data: { resetCode: hashedCode, expiresAt, userId: user.id}
         });
-        
+
         // Send reset email
         const subject = "Email reset for blogging app";
         const message = `Your password reset code is: ${resetCode}. It expires in 10 minutes.`
         await sendMail("mhananothman@gmail.com", subject, message);
+
         return res.status(200).json({
             message: "If email exists, a reset code has been sent."
         });
@@ -128,10 +129,111 @@ const requestResetCode = async (req, res) => {
         return res.status(500).json({message: "Internal Server Error"});
     }
 }
+const verifyResetCode = async (req, res) =>{
+    try {
+        // obtain reset code
+        const { email, resetCode } = req.body;
+        console.log({email, resetCode});
+        // Check if in db or send error message
+        const user = await prisma.users.findUnique({
+            where : { email }
+        });
+        console.log(user);
+        if (!user) {
+            return res.status(401).json({
+                message: "Invalid reset request. Kindly retry."
+            });
+        }
+        // check if reset code is correct or send error message
+        const resetRequest = await prisma.passwordReset.findUnique({
+            where : { userId: user.id }
+        });
+        console.log(resetRequest);
+        // const resetrequests = await prisma.passwordReset.findMany({});
+        // console.log(resetrequests);
+
+        const isMatch = await bcrypt.compare(resetCode, resetRequest.resetCode);
+        if (!resetRequest || !isMatch) {
+            return res.status(400).json({ message: "Invalid reset code" });
+        }
+        // check it the time has "expired" or send error message
+        if (Date.now() > resetRequest.expiresAt) {
+            return res.status(400).json({ message: "Reset code expired." });
+        }
+        // allow user to reset password
+        return res.status(200).json({ message: "Reset code verified successfully" });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: "Internal Server Error" });
+    }
+}
+const resetPassword = async (req, res) =>{
+    try {
+        const { email, resetCode, password, password2 } = req.body;
+
+        // check if a reset request exists
+        const user = await prisma.users.findUnique({
+            where: { email }, 
+            omit:{ password: true }
+        });
+        const resetRequest = await prisma.passwordReset.findUnique({
+            where : { userId: user.id}
+        });
+        if (!resetRequest) {
+            return res.status(400).json({ 
+                message: "Error. Ensure reset code has been requested."
+            });
+        }
+        // check if the reset code is correct
+        const isMatch = await bcrypt.compare(resetCode, resetRequest.resetCode);
+        if (!resetRequest.resetCode || !isMatch) {
+            return res.status(400).json({ 
+                message: "Request code invalid. Please retry."
+            });
+        }
+
+        // check if reset code has not expired
+        if (Date.now() > resetRequest.expiresAt) {
+            return res.status(400).json({ 
+                message: "Request code expired or invalid. Request for a new code"
+            });
+        }
+        // check if passwords match
+        if (! password === password2 ) {
+            return res.status(400).json({
+                message: "Reset failed. Passwords do not match!"
+            });
+        }
+
+        // perform the reset of the password
+        const newPassword = await bcrypt.hash(password, DB_SALT);
+        const updatedUser = await prisma.users.update({
+            data: { password: newPassword },
+            select: {
+                username : true, 
+                email: true,
+                role : true, 
+                updatedAt : true, 
+                createdAt : true
+            },
+            where : { id: user.id }
+        });
+        
+        return res.status(200).json({ 
+            message: "Password reset successful",
+            data : { ...updatedUser, password }
+         });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: "Internal Server Error" });
+    }
+}
 module.exports = {
     getSignupPage,
     postSignup,
     getLoginPage,
     postLogin,
-    requestResetCode
+    requestResetCode,
+    verifyResetCode,
+    resetPassword
 };
