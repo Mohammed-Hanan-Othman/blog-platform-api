@@ -8,7 +8,7 @@ const DB_SALT = parseInt(process.env.DB_SALT);
 const JWT_SECRET = process.env.JWT_SECRET;
 const otpGen = require("otp-generator");
 const TEN_MINUTES = 10 * 60 * 1000;
-
+const TEST_RECEPIENT = process.env.TEST_RECEPIENT;
 
 const getSignupPage =  (req, res) => {
     res.status(200).json({message:"Register here"});
@@ -119,7 +119,7 @@ const requestResetCode = async (req, res) => {
         // Send reset email
         const subject = "Email reset for blogging app";
         const message = `Your password reset code is: ${resetCode}. It expires in 10 minutes.`
-        await sendMail("mhananothman@gmail.com", subject, message);
+        await sendMail(TEST_RECEPIENT, subject, message);
 
         return res.status(200).json({
             message: "If email exists, a reset code has been sent."
@@ -218,7 +218,16 @@ const resetPassword = async (req, res) =>{
             },
             where : { id: user.id }
         });
-        
+
+        // Send email to user on password change
+        const subject = "Password change on your bloggingApp account";
+        const message = `Your password was successfully changed. If this 
+        was you, you do not have to do anything. Otherwise, your account 
+        might have been compromised.
+        `;
+        await sendMail(TEST_RECEPIENT, subject, message);
+
+        // send response to frontend
         return res.status(200).json({ 
             message: "Password reset successful",
             data : { ...updatedUser, password }
