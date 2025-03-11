@@ -4,7 +4,8 @@ const { getSignupPage, postSignup,
     getLoginPage,postLogin,
     requestResetCode
 } = require("../controllers/authController");
-const { validateSignup, validateLogin, validateResetRequest } = require("../middlewares/authValidator");
+const { validateSignup, validateLogin, validateResetRequest }
+    = require("../middlewares/authValidator");
 const { handleValidationErrors } = require("../middlewares/handleValidation");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
