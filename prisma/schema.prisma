@@ -14,26 +14,27 @@ datasource db {
 }
 
 model Users {
-  id        String   @id @default(cuid()) // Generates a CUID by default
-  username  String   @unique
-  password  String
-  email     String   @unique
-  role      String   // "admin", "author", or "reader"
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  posts     Posts[]
-  comments  Comments[]
+  id            String         @id @default(cuid()) // Generates a CUID by default
+  username      String         @unique
+  password      String
+  email         String         @unique
+  role          String // "admin", "author", or "reader"
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  posts         Posts[]
+  comments      Comments[]
+  passwordReset PasswordReset?
 }
 
 model Posts {
-  id        String   @id @default(cuid()) // Generates a CUID by default
-  title     String   @unique
+  id        String     @id @default(cuid()) // Generates a CUID by default
+  title     String     @unique
   content   String
   authorId  String
-  author    Users    @relation(fields: [authorId], references: [id])
-  status    String   @default("draft") //"draft" or "published"
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  author    Users      @relation(fields: [authorId], references: [id])
+  status    String     @default("draft") //"draft" or "published"
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   comments  Comments[]
 }
 
@@ -46,4 +47,12 @@ model Comments {
   user      Users    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model PasswordReset {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  resetCode String
+  expiresAt DateTime
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
