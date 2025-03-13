@@ -149,8 +149,6 @@ const verifyResetCode = async (req, res) =>{
             where : { userId: user.id }
         });
         console.log(resetRequest);
-        // const resetrequests = await prisma.passwordReset.findMany({});
-        // console.log(resetrequests);
 
         const isMatch = await bcrypt.compare(resetCode, resetRequest.resetCode);
         if (!resetRequest || !isMatch) {
@@ -160,7 +158,7 @@ const verifyResetCode = async (req, res) =>{
         if (Date.now() > resetRequest.expiresAt) {
             return res.status(400).json({ message: "Reset code expired." });
         }
-        // allow user to reset password
+
         return res.status(200).json({ message: "Reset code verified successfully" });
     } catch (error) {
         console.log(error);
@@ -170,12 +168,16 @@ const verifyResetCode = async (req, res) =>{
 const resetPassword = async (req, res) =>{
     try {
         const { email, resetCode, password, password2 } = req.body;
-
         // check if a reset request exists
         const user = await prisma.users.findUnique({
             where: { email }, 
             omit:{ password: true }
         });
+        if (!user) {
+            return res.status(400).json({ 
+                message: "Error. Ensure email is correct."
+            });
+        }
         const resetRequest = await prisma.passwordReset.findUnique({
             where : { userId: user.id}
         });
@@ -191,7 +193,6 @@ const resetPassword = async (req, res) =>{
                 message: "Request code invalid. Please retry."
             });
         }
-
         // check if reset code has not expired
         if (Date.now() > resetRequest.expiresAt) {
             return res.status(400).json({ 
@@ -199,12 +200,11 @@ const resetPassword = async (req, res) =>{
             });
         }
         // check if passwords match
-        if (! password === password2 ) {
+        if ( password !== password2 ) {
             return res.status(400).json({
                 message: "Reset failed. Passwords do not match!"
             });
         }
-
         // perform the reset of the password
         const newPassword = await bcrypt.hash(password, DB_SALT);
         const updatedUser = await prisma.users.update({
@@ -226,6 +226,11 @@ const resetPassword = async (req, res) =>{
         might have been compromised.
         `;
         await sendMail(TEST_RECEPIENT, subject, message);
+
+        // delete reset entry
+        await prisma.passwordReset.delete({
+            where:{ userId: user.id }
+        });
 
         // send response to frontend
         return res.status(200).json({ 

@@ -19,7 +19,6 @@ const validateSignup = [
         .notEmpty().withMessage("password is required")
         .isLength({min:8}).withMessage("password must be at least 8 characters long")
 ];
-
 const validateLogin = [
     check("identifier")
         .notEmpty().withMessage("username or email cannot be empty"),
