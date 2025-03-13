@@ -4,6 +4,7 @@ const { authRouter } = require("./routers/authRouter");
 const { usersRouter } = require("./routers/usersRouter");
 const { postsRouter } = require("./routers/postsRouter");
 const { commentsRouter } = require("./routers/commentsRouter");
+const { repliesRouter } = require("./routers/repliesRouter");
 const { indexRouter } = require("./routers/indexRouter");
 const { protectRoute } = require("./middlewares/authToken");
 
@@ -21,6 +22,7 @@ app.get("/api/test-auth",
 app.use("/api/users", usersRouter);
 app.use("/api/posts", postsRouter);
 app.use("/api/comments/", commentsRouter);
+app.use("/api/comments/replies", repliesRouter);
 app.use("/", indexRouter);
 
 
