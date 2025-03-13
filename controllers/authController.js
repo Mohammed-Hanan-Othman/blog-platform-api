@@ -2,18 +2,18 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const otpGen = require("otp-generator");
 const { sendMail } = require("../utils/sendMail");
 const DB_SALT = parseInt(process.env.DB_SALT);
 const JWT_SECRET = process.env.JWT_SECRET;
-const otpGen = require("otp-generator");
 const TEN_MINUTES = 10 * 60 * 1000;
 const TEST_RECEPIENT = process.env.TEST_RECEPIENT;
+
+const prisma = new PrismaClient();
 
 const getSignupPage =  (req, res) => {
     res.status(200).json({message:"Register here"});
 }
-
 const postSignup = async (req, res) => {
     try {
         const { username, email, role, password } = req.body;
@@ -43,11 +43,9 @@ const postSignup = async (req, res) => {
         res.status(500).json({message:"Internal server error"});
     }
 }
-
 const getLoginPage = (req, res) => {
     res.status(200).json({message:"This is the login page"});
 }
-
 const postLogin = async (req, res) => {
     try {
         const { identifier, password } = req.body;
@@ -245,6 +243,7 @@ const resetPassword = async (req, res) =>{
         return res.status(500).json({message: "Internal Server Error" });
     }
 }
+
 module.exports = {
     getSignupPage,
     postSignup,
