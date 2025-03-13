@@ -148,8 +148,11 @@ const verifyResetCode = async (req, res) =>{
         const resetRequest = await prisma.passwordReset.findUnique({
             where : { userId: user.id }
         });
-        console.log(resetRequest);
-
+        if (!resetRequest) {
+            return res.status(400).json({ 
+                message: "Error. Ensure code has already been requested" 
+            });
+        }
         const isMatch = await bcrypt.compare(resetCode, resetRequest.resetCode);
         if (!resetRequest || !isMatch) {
             return res.status(400).json({ message: "Invalid reset code" });
