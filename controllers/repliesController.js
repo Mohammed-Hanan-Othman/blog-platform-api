@@ -143,7 +143,53 @@ const createReply = async (req, res) => {
 }
 const updateReply = async (req, res) => {
     try {
-        // PUT a reply
+        // Obtain commentId and replyId
+        const { commentId, id} = req.params;
+        const { content } = req.body;
+        // Find comment
+        const comment = await prisma.comments.findUnique({
+            where: { id: commentId }
+        });
+        if (!comment) {
+            return res.status(404).json({ 
+                message: "No comments found with this id" 
+            });
+        }
+        // Retrieve replies
+        const reply = await prisma.replies.findUnique({
+            where: { id: id },
+            include: { user: true }
+        });
+        if (!reply) {
+            return res.status(404).json({ 
+                message: "No reply found with this id" 
+            });
+        }
+        // Ensure only the reply creator can edit it.
+        if (reply.userId !== req.user.id) {
+            return res.status(400).json({
+                message: "Only the author can edit this reply."
+            });
+        }
+        // Edit reply
+        const updatedReply = await prisma.replies.update({
+            data: { content},
+            where: { id: id },
+            include: { comment: { include: { user: true }}, user: true }
+        });
+        return res.status(200).json({
+            message: "Reply updated successfully",
+            data:{
+                id: updatedReply.id,
+                comment: updatedReply.comment.content,
+                commentAuthor: updatedReply.comment.user.username,
+                reply: updatedReply.content,
+                replyAuthor: updatedReply.user.username,
+                role: updatedReply.user.role,
+                dateCreated: updatedReply.createdAt,
+                dateUpdated: updatedReply.updatedAt,
+            }
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error"});
@@ -151,7 +197,62 @@ const updateReply = async (req, res) => {
 }
 const deleteReply = async (req, res) => {
     try {
-        // DELETE a reply
+        // get commentId and replyId
+        const { commentId, id} = req.params;
+        // Find comment
+        const comment = await prisma.comments.findUnique({
+            where: { id: commentId }
+        });
+        if (!comment) {
+            return res.status(404).json({ 
+                message: "No comments found with this id" 
+            });
+        }
+        // find reply
+        const reply = await prisma.replies.findUnique({
+            where: { id: id }
+        });
+        if (!reply) {
+            return res.status(404).json({ 
+                message: "No reply found with this id" 
+            });
+        }
+        // Ensure only the reply creator can delete it.
+        if (reply.userId !== req.user.id) {
+            return res.status(400).json({
+                message: "Only the author can delete this reply."
+            });
+        }
+        // delete reply
+        const deletedReply = await prisma.replies.delete({
+            where: { id: id },
+            include: { 
+                comment: {
+                    include: { user: true }
+                }, 
+                user: true 
+            }
+        });
+        // send response
+        return res.status(200).json({
+            message: "Reply deleted successfully",
+            data: {
+                id: deletedReply.id,
+                content: deletedReply.content,
+                replyAuthor: deletedReply.user.username,
+                role: deletedReply.user.role,
+                comment: {
+                    id: deletedReply.comment.id,
+                    content: deletedReply.comment.content,
+                    commentAuthor: deletedReply.comment.user.username,
+                    role: deletedReply.comment.user.role,
+                    createdAt: deletedReply.comment.createdAt,
+                    updatedAt: deletedReply.comment.updatedAt
+                },
+                createdAt: deletedReply.createdAt,
+                updatedAt: deletedReply.updatedAt                
+            }
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error"});

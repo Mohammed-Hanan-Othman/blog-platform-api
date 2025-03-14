@@ -1,6 +1,6 @@
 // This handles replies to comments
 const { Router } = require("express");
-const { createReply, getAllReplies, getSingleReply } = require("../controllers/repliesController");
+const { createReply, getAllReplies, getSingleReply, updateReply, deleteReply } = require("../controllers/repliesController");
 const { protectRoute } = require("../middlewares/authToken");
 const { validateReply } = require("../middlewares/validators/repliesValidator");
 const { handleValidationErrors } = require("../middlewares/validators/handleValidation");
@@ -25,11 +25,15 @@ repliesRouter.post("/",
     createReply,
 );
 // Edit a reply to a comment
-repliesRouter.put("/:id",(req, res) =>{
-
-});
+repliesRouter.put("/:id",
+    protectRoute,
+    validateReply,
+    handleValidationErrors,
+    updateReply
+);
 // Delete a comment 
-repliesRouter.delete("/:id",(req, res) =>{
-
-});
+repliesRouter.delete("/:id",
+    protectRoute,
+    deleteReply
+);
 module.exports = { repliesRouter };
