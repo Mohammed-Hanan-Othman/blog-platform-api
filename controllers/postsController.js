@@ -349,3 +349,7 @@ module.exports = {
     getAllComments,
     createComment
 };
+
+
+// /comments/:commentId/replies
+// /replies?commentId={id}

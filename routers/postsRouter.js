@@ -1,13 +1,19 @@
 // Implements methods in the post controller
 const { Router } = require("express");
 const { protectRoute } = require("../middlewares/authToken");
-const { getAllPosts, createPost, 
-        getSinglePost, updatePost, 
-        deletePost, updatePostStatus,
-        createComment, getAllComments
+const { getAllPosts, 
+    createPost, 
+    getSinglePost, 
+    updatePost, 
+    deletePost, 
+    updatePostStatus,
+    createComment, 
+    getAllComments
 } = require("../controllers/postsController");
-const { validatePost, validatePostUpdate,
-         validatePostId, validatePostStatus 
+const { validatePost, 
+    validatePostUpdate,
+    validatePostId, 
+    validatePostStatus 
 } = require("../middlewares/postValidator");
 const { handleValidationErrors } = require("../middlewares/handleValidation");
 const { validateCommentContent } = require("../middlewares/commentValidator");
