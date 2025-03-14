@@ -13,8 +13,8 @@ const { validateSignup,
     validateResetRequest, 
     validateResetCode, 
     validateResetPassword 
-} = require("../middlewares/authValidator");
-const { handleValidationErrors } = require("../middlewares/handleValidation");
+} = require("../middlewares/validators/authValidator");
+const { handleValidationErrors } = require("../middlewares/validators/handleValidation");
 const authRouter = Router();
 
 // sign up routes

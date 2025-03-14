@@ -2,8 +2,8 @@
 const { Router } = require("express");
 const { protectRoute } = require("../middlewares/authToken");
 const { getAllUsers, getSingleUser, deleteSingleUser, getMyInfo, updateMyInfo } = require("../controllers/usersController");
-const { validateUserId, validateUserInfo } = require("../middlewares/userValidator");
-const { handleValidationErrors } = require("../middlewares/handleValidation");
+const { validateUserId, validateUserInfo } = require("../middlewares/validators/userValidator");
+const { handleValidationErrors } = require("../middlewares/validators/handleValidation");
 const usersRouter = Router();
 
 // Handles /api/users

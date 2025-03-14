@@ -14,9 +14,9 @@ const { validatePost,
     validatePostUpdate,
     validatePostId, 
     validatePostStatus 
-} = require("../middlewares/postValidator");
-const { handleValidationErrors } = require("../middlewares/handleValidation");
-const { validateCommentContent } = require("../middlewares/commentValidator");
+} = require("../middlewares/validators/postValidator");
+const { handleValidationErrors } = require("../middlewares/validators/handleValidation");
+const { validateCommentContent } = require("../middlewares/validators/commentValidator");
 
 const postsRouter = Router();
 

@@ -3,7 +3,46 @@ const prisma = new PrismaClient();
 
 const getAllReplies = async (req, res) => {
     try {
-        // GET all replies to a comment
+        // get comment id
+        const { commentId } = req.params;
+
+        // Find comment
+        const comment = await prisma.comments.findUnique({
+            where: { id: commentId },
+            include: { user: true}
+        });
+        if (!comment) {
+            return res.status(404).json({ 
+                message: "No comments found with this id" 
+            });
+        }
+        // retrieve replies
+        const replies = await prisma.replies.findMany({
+            where: { commentId: commentId},
+            include: { user: true, comment: {include: {user: true}}}
+        });
+        const repliesData = replies.map((reply) =>{
+            return {
+                id: reply.id,
+                comment: reply.comment.content,
+                commentAuthor: reply.comment.user.username,
+                reply: reply.content,
+                replyAuthor: reply.user.username,
+                dateCreated: reply.createdAt,
+                dateUpdated: reply.updatedAt
+            }
+        });
+        return res.status(200).json({ 
+            message: "Replies fetched successfully",
+            data: {
+                id: commentId,
+                comment: comment.content,
+                commentAuthor: comment.user.username,
+                replies : repliesData,
+                dateCreated: comment.createdAt,
+                dateUpdated: comment.updatedAt
+            }
+        })
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error"});

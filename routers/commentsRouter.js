@@ -1,8 +1,8 @@
 // Implements methods in the comment controller
 const { Router } = require("express");
 const { protectRoute } = require("../middlewares/authToken");
-const { validateCommentId, validateCommentContent } = require("../middlewares/commentValidator");
-const { handleValidationErrors } = require("../middlewares/handleValidation");
+const { validateCommentId, validateCommentContent } = require("../middlewares/validators/commentValidator");
+const { handleValidationErrors } = require("../middlewares/validators/handleValidation");
 const { getSingleComment, updateComment, 
     deleteComment,
 } = require("../controllers/commentsController");
