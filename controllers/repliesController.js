@@ -28,6 +28,7 @@ const getAllReplies = async (req, res) => {
                 commentAuthor: reply.comment.user.username,
                 reply: reply.content,
                 replyAuthor: reply.user.username,
+                role: reply.user.role,
                 dateCreated: reply.createdAt,
                 dateUpdated: reply.updatedAt
             }
@@ -38,6 +39,7 @@ const getAllReplies = async (req, res) => {
                 id: commentId,
                 comment: comment.content,
                 commentAuthor: comment.user.username,
+                role: comment.user.role,
                 replies : repliesData,
                 dateCreated: comment.createdAt,
                 dateUpdated: comment.updatedAt
@@ -50,7 +52,48 @@ const getAllReplies = async (req, res) => {
 }
 const getSingleReply = async (req, res) => {
     try {
-        // GET a reply to a comment
+        // get reply id and comment id
+        const { commentId, id } = req.params;
+
+        // Retrieve comment
+        const comment = await prisma.comments.findUnique({
+            where: { id: commentId }
+        });
+        if (!comment) {
+            return res.status(404).json({ 
+                message: "No comments found with this id" 
+            });
+        }
+        
+        // Retrieve replies
+        const reply = await prisma.replies.findUnique({
+            where: { id: id },
+            include: { 
+                comment: {
+                    include: { user: true }
+                }, 
+                user: true 
+            }
+        });
+        return res.status(200).json({ 
+            message: "Reply retrieved successfully",
+            data: {
+                id: reply.id,
+                content: reply.content,
+                replyAuthor: reply.user.username,
+                role: reply.user.role,
+                comment: {
+                    id: reply.comment.id,
+                    content: reply.comment.content,
+                    commentAuthor: reply.comment.user.username,
+                    role: reply.comment.user.role,
+                    createdAt: reply.comment.createdAt,
+                    updatedAt: reply.comment.updatedAt
+                },
+                createdAt: reply.createdAt,
+                updatedAt: reply.updatedAt                
+            }
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error"});
@@ -58,7 +101,6 @@ const getSingleReply = async (req, res) => {
 }
 const createReply = async (req, res) => {
     try {
-        // POST a reply
         // get comment id and reply content, userId
         const commentId = req.params.commentId;
         const { content } = req.body;
@@ -89,6 +131,7 @@ const createReply = async (req, res) => {
                 commentAuthor: reply.comment.user.username,
                 reply: reply.content,
                 replyAuthor: reply.user.username,
+                role: reply.user.role,
                 dateCreated: reply.createdAt,
                 dateUpdated: reply.updatedAt,
             }

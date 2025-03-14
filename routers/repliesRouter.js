@@ -1,6 +1,6 @@
 // This handles replies to comments
 const { Router } = require("express");
-const { createReply, getAllReplies } = require("../controllers/repliesController");
+const { createReply, getAllReplies, getSingleReply } = require("../controllers/repliesController");
 const { protectRoute } = require("../middlewares/authToken");
 const { validateReply } = require("../middlewares/validators/repliesValidator");
 const { handleValidationErrors } = require("../middlewares/validators/handleValidation");
@@ -9,12 +9,14 @@ const repliesRouter = Router({ mergeParams: true });
 
 // Get all replies to a comment
 repliesRouter.get("/",
+    protectRoute,
     getAllReplies
 );
 // Get a specific reply to a comment
-repliesRouter.get("/:id",(req, res) =>{
-
-});
+repliesRouter.get("/:id",
+    protectRoute,
+    getSingleReply
+);
 // Create a reply to a comment
 repliesRouter.post("/",
     protectRoute,
